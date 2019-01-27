@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+signal gameOver
+
 signal updateStress
 signal updateFatigue
 signal updateHunger
@@ -46,9 +48,11 @@ var mode = AT_HOME
 const RATE_STRESS_AT_HOME = -.1
 const RATE_FATIGUE_WHILE_WALKING = .1
 const RATE_HUNGER_WHILE_ANYTHING = .2
-const RATE_MANHUNT_WHILE_ANYTHING = -.1
+const RATE_MANHUNT_WHILE_ANYTHING = -.3
 const RATE_DAMAGE_WHILE_TIRED = .4
+const RATE_DAMAGE_BY_FULL_STRESS = .3
 const RATE_CAR_DECAY = .6
+const RATE_STRESS_BY_UNPOPULARITY = 1
 const RATE_STRESS_BY_SCHROTTKARRE = .5
 # changes at certain times
 const DIFF_MONEY_AFTER_WORK = 100
@@ -59,7 +63,7 @@ const RENT = 800
 
 # starting values
 const INIT_CASH = 3000
-const INIT_FOOD = 7
+const INIT_FOOD = 5
 
 func _ready():
 	goalPos = position
@@ -70,10 +74,7 @@ func _ready():
 	# starting values
 	cash = INIT_CASH
 	food = INIT_FOOD
-	
-	stat[CARDAMAGE] = 10
-	stat[UNPOPULARITY] = 25
-	
+		
 	maxspeed_x = MAXSPEED_X
 	accel_x = ACCEL_X
 
@@ -85,18 +86,19 @@ func continuous_changes_in_stats(delta):
 	stat[HUNGER] += RATE_HUNGER_WHILE_ANYTHING * delta
 	stat[MANHUNT] += RATE_MANHUNT_WHILE_ANYTHING * delta
 
-	if stat[FATIGUE] == 100:
-		stat[DAMAGE] += RATE_DAMAGE_WHILE_TIRED * delta
+	stat[DAMAGE] += RATE_DAMAGE_WHILE_TIRED * delta * clamp((stat[FATIGUE]-95)/5,0,1)
 		
-	if mode == DRIVING:
-		stat[CARDAMAGE] += RATE_CAR_DECAY * delta
+	stat[DAMAGE] += RATE_DAMAGE_BY_FULL_STRESS * delta * clamp((stat[STRESS]-90)/10,0,1)
 		
-	if stat[CARDAMAGE] > 80:
-		stat[STRESS] += RATE_STRESS_BY_SCHROTTKARRE * delta
+	stat[STRESS] += RATE_STRESS_BY_UNPOPULARITY * delta * clamp((stat[UNPOPULARITY]-85)/15,0,1)
+				
+	stat[STRESS] += RATE_STRESS_BY_SCHROTTKARRE * delta * clamp((stat[CARDAMAGE]-80)/20,0,1)
+
+	if mode == DRIVING: stat[CARDAMAGE] += RATE_CAR_DECAY * delta
 	
 func handle_stats(delta):
 	continuous_changes_in_stats(delta)
-	if randi() % 10000 == 0: stat[MANHUNT] += 30
+	if randi() % 10000 == 0: stat[MANHUNT] += 16
 
 	var stat_overall = 0
 	for i in stat.size():
@@ -117,6 +119,10 @@ func handle_stats(delta):
 	
 	emit_signal("updateCash", cash)
 	emit_signal("updateFood", food)
+
+	#deadness condition
+	if stat[DAMAGE] == 100:
+		emit_signal("gameOver")
 
 func _physics_process(delta):
 	deadtime = max(deadtime - delta, 0)
@@ -251,10 +257,9 @@ func _on_Main_haveToEat():
 	if food == 0:
 		stat[HUNGER] += 15
 	else:
-		if stat[HUNGER] < 15:
-			stat[DAMAGE] += 15
-		food -= 1
-		stat[HUNGER] -= 30
+		if stat[HUNGER] > 30:
+			food -= 1
+			stat[HUNGER] -= 30
 
 func _on_Main_haveToPayRent():
 	if cash >= RENT:
@@ -273,3 +278,6 @@ func _on_Main_haveToPayRent():
 func _on_Main_increaseStat(iStat, amt):
 	if iStat >= 0 and iStat < stat.size():
 		stat[iStat] = clamp(stat[iStat] + amt, 0, 100)
+
+func is_driving():
+	return (mode == DRIVING)

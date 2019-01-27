@@ -5,7 +5,7 @@ signal haveToEat
 signal haveToPayRent
 signal increaseStat
 
-const GAME_DAY_IN_REAL_MINUTES = .1
+var GAME_DAY_IN_REAL_MINUTES = 5
 
 onready var gameTimeMinutes
 onready var gameDay 
@@ -15,6 +15,8 @@ var eaten1Today = false
 var eaten2Today = false
 var eaten3Today = false
 var sleptToday = false
+
+var gameOver = false
 
 func _ready():
 	var realTime = OS.get_time()
@@ -27,6 +29,13 @@ func _process(delta):
 	
 	if Input.is_key_pressed(KEY_ESCAPE):
 		get_tree().quit()
+
+	if gameOver: return #QUICKFIX	
+		
+	if Input.is_key_pressed(KEY_F1):
+		GAME_DAY_IN_REAL_MINUTES *= 1.005
+	if Input.is_key_pressed(KEY_F2):
+		GAME_DAY_IN_REAL_MINUTES /= 1.005
 		
 	gameTimeMinutes += delta/60 * 1440/GAME_DAY_IN_REAL_MINUTES
 	
@@ -75,3 +84,7 @@ func _on_ExclWork_exclamation_clicked():
 
 func _on_Bert_bert_hat_heute_geil_geratzt():
 	sleptToday = true
+
+
+func _on_Bert_gameOver():
+	gameOver = true

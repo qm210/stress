@@ -1,5 +1,7 @@
 extends Control
 
+var elapsed = 0
+
 func _ready():
 	_on_Bert_updateStress(0)
 	_on_Bert_updateFatigue(0)
@@ -56,3 +58,10 @@ func _on_Bert_updateFood(val):
 func _on_Main_updateTime(gameTimeMinutes, gameDay):
 	$Clock.text = " %d.Tag %02d:%02d" % [gameDay+1, floor(gameTimeMinutes/60),fmod(gameTimeMinutes,60)]
 			
+func _process(delta):
+	$UDEAD.rotate((PI/180)*(.5 * sin(TAU * elapsed * .9)))
+	$UDEAD.scale = (1.3 + .3 * sin(TAU * elapsed * 1.3)) * Vector2(1,1)
+	elapsed += delta
+
+func _on_Bert_gameOver():
+	$UDEAD.show()

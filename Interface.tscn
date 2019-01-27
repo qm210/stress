@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Interface.gd" type="Script" id=1]
 [ext_resource path="res://interface/MoneyAndFood.tscn" type="PackedScene" id=2]
 [ext_resource path="res://interface/Bar.tscn" type="PackedScene" id=3]
 [ext_resource path="res://interface/alarm clock.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://interface/lost-menu-damage.png" type="Texture" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 
@@ -13,7 +14,7 @@ use_filter = false
 font_data = ExtResource( 4 )
 _sections_unfolded = [ "Extra Spacing", "Font", "Resource", "Settings" ]
 
-[node name="Interface" type="Control" index="0"]
+[node name="Interface" type="Control"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -91,5 +92,14 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 _sections_unfolded = [ "custom_colors", "custom_constants", "custom_fonts", "custom_styles" ]
+
+[node name="UDEAD" type="Sprite" parent="." index="9"]
+
+visible = false
+position = Vector2( 720, 430 )
+rotation = 0.0698132
+scale = Vector2( 1.10516, 1.10516 )
+texture = ExtResource( 5 )
+_sections_unfolded = [ "Transform", "Visibility" ]
 
 

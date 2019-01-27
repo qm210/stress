@@ -17,7 +17,8 @@ func _ready():
 	
 func _process(delta):
 	
-	if (position - $"../Bert".position).length() <= TOUCH_PROXIMITY:
+	if (position - $"../Bert".position).length() <= TOUCH_PROXIMITY \
+	   and not $"../Bert".is_driving():
 		$AnimatedSprite.set_frame(1)
 		scale = Vector2(.9, .9)
 		position = Vector2(pos_x + (randi() % 5 - 2), pos_y + (randi() % 5 - 2))

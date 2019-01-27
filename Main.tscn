@@ -2,10 +2,10 @@
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://backdrop/back_day.png" type="Texture" id=2]
-[ext_resource path="res://Interface.tscn" type="PackedScene" id=3]
-[ext_resource path="res://backdrop/sky.png" type="Texture" id=4]
-[ext_resource path="res://TextureRect.gd" type="Script" id=5]
-[ext_resource path="res://ActionBox.tscn" type="PackedScene" id=6]
+[ext_resource path="res://ActionBox.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Interface.tscn" type="PackedScene" id=4]
+[ext_resource path="res://backdrop/sky.png" type="Texture" id=5]
+[ext_resource path="res://TextureRect.gd" type="Script" id=6]
 [ext_resource path="res://interface/stress_logo.png" type="Texture" id=7]
 [ext_resource path="res://TitleStress.gd" type="Script" id=8]
 [ext_resource path="res://GeileKarre.tscn" type="PackedScene" id=9]
@@ -15,7 +15,7 @@
 [ext_resource path="res://AudioExplosion.gd" type="Script" id=13]
 [ext_resource path="res://STRESS.ogg" type="AudioStream" id=14]
 
-[node name="Main" type="Node" index="0"]
+[node name="Main" type="Node"]
 
 script = ExtResource( 1 )
 
@@ -51,7 +51,12 @@ rotation = 0.0
 scale = Vector2( 1, 1 )
 transform = Transform2D( 1, 0, 0, 1, 0, 0 )
 
-[node name="Interface" parent="World/CanvasLayer" index="0" instance=ExtResource( 3 )]
+[node name="HomeMenu" parent="World/CanvasLayer" index="0" instance=ExtResource( 3 )]
+
+position = Vector2( 1855, -400 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Interface" parent="World/CanvasLayer" index="1" instance=ExtResource( 4 )]
 
 anchor_left = 0.5
 anchor_right = 0.5
@@ -60,7 +65,7 @@ margin_left = -710.0
 margin_right = 710.0
 margin_bottom = 131.0
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="World/CanvasLayer" index="1"]
+[node name="ParallaxBackground" type="ParallaxBackground" parent="World/CanvasLayer" index="2"]
 
 layer = -1
 offset = Vector2( 0, 0 )
@@ -95,15 +100,10 @@ mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-texture = ExtResource( 4 )
+texture = ExtResource( 5 )
 stretch_mode = 0
-script = ExtResource( 5 )
+script = ExtResource( 6 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
-
-[node name="HomeMenu" parent="World/CanvasLayer" index="2" instance=ExtResource( 6 )]
-
-position = Vector2( 1855, -400 )
-_sections_unfolded = [ "Transform" ]
 
 [node name="TitleStress" type="Sprite" parent="World/CanvasLayer" index="3"]
 
@@ -151,7 +151,7 @@ script = ExtResource( 13 )
 stream = ExtResource( 14 )
 volume_db = -3.0
 pitch_scale = 1.0
-autoplay = false
+autoplay = true
 mix_target = 0
 bus = "Master"
 
@@ -161,9 +161,9 @@ bus = "Master"
 
 [connection signal="increaseStat" from="." to="World/Bert" method="_on_Main_increaseStat"]
 
-[connection signal="updateTime" from="." to="World/CanvasLayer/Interface" method="_on_Main_updateTime"]
-
 [connection signal="updateTime" from="." to="World/CanvasLayer/ParallaxBackground/ParallaxLayer/TextureRect" method="_on_Main_updateTime"]
+
+[connection signal="updateTime" from="." to="World/CanvasLayer/Interface" method="_on_Main_updateTime"]
 
 [connection signal="button1" from="World/CanvasLayer/HomeMenu" to="World/Bert" method="_on_HomeMenu_button1"]
 
@@ -182,6 +182,10 @@ bus = "Master"
 [connection signal="bert_hat_heute_geil_geratzt" from="World/Bert" to="." method="_on_Bert_bert_hat_heute_geil_geratzt"]
 
 [connection signal="bert_ist_in_der_geilen_karre" from="World/Bert" to="World/GeileKarre" method="_on_Bert_bert_ist_in_der_geilen_karre"]
+
+[connection signal="gameOver" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_gameOver"]
+
+[connection signal="gameOver" from="World/Bert" to="." method="_on_Bert_gameOver"]
 
 [connection signal="updateCarDamage" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateCarDamage"]
 
