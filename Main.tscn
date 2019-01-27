@@ -1,11 +1,12 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://backdrop/inside_h1200.png" type="Texture" id=2]
 [ext_resource path="res://Interface.tscn" type="PackedScene" id=3]
 [ext_resource path="res://backdrop/sky.png" type="Texture" id=4]
 [ext_resource path="res://TextureRect.gd" type="Script" id=5]
-[ext_resource path="res://Bert.tscn" type="PackedScene" id=6]
+[ext_resource path="res://GeileKarre.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Bert.tscn" type="PackedScene" id=7]
 
 [node name="Main" type="Node"]
 
@@ -91,7 +92,11 @@ stretch_mode = 0
 script = ExtResource( 5 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="Bert" parent="World" index="3" instance=ExtResource( 6 )]
+[node name="GeileKarre" parent="World" index="3" instance=ExtResource( 6 )]
+
+position = Vector2( 595, 690 )
+
+[node name="Bert" parent="World" index="4" instance=ExtResource( 7 )]
 
 position = Vector2( -100, 430 )
 scale = Vector2( 0.65625, 0.65625 )
@@ -99,6 +104,14 @@ scale = Vector2( 0.65625, 0.65625 )
 [connection signal="updateTime" from="." to="World/CanvasLayer/ParallaxBackground/ParallaxLayer/TextureRect" method="_on_Main_updateTime"]
 
 [connection signal="updateTime" from="." to="World/CanvasLayer/Interface" method="_on_Main_updateTime"]
+
+[connection signal="get_in_car" from="World/GeileKarre" to="World/Bert" method="_on_GeileKarre_get_in_car"]
+
+[connection signal="get_out_of_car" from="World/GeileKarre" to="World/Bert" method="_on_GeileKarre_get_out_of_car"]
+
+[connection signal="input_event" from="World/GeileKarre" to="World/GeileKarre" method="_on_GeileKarre_input_event"]
+
+[connection signal="tree_entered" from="World/GeileKarre" to="World/GeileKarre" method="_on_GeileKarre_tree_entered"]
 
 [connection signal="updateCarDamage" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateCarDamage"]
 

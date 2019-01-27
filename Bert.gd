@@ -15,7 +15,9 @@ const MAXSPEED_X = 800
 const ACCEL_X = 400
 const GRAVITY = 200
 
-var touch_ground = false
+# wait some time between two registered touch events
+const TOUCH_DEADTIME = .25
+var deadtime = 0
 
 var elapsed = 0
 
@@ -23,10 +25,27 @@ var velocity = Vector2()
 onready var goalPos
 onready var goalDir
 
-var stat = PoolIntArray([0,0,0,0,0,0,0])
-
-enum PLACES { AT_HOME, DRIVING, AT_WORK, WALKING_OUTSIDE, AT_THE_STORE}
 enum STATS { STRESS, FATIGUE, HUNGER, DAMAGE, UNPOPULARITY, CARDAMAGE, MANHUNT }
+var stat = PoolRealArray([0,0,0,0,0,0,0])
+var cash
+var food
+
+enum MODES { AT_HOME, SLEEP, DRIVING, AT_WORK, WALKING_OUTSIDE, AT_THE_STORE}
+var mode = AT_HOME
+
+# continuously changing parameters
+const RATE_STRESS_AT_HOME = -.1
+const RATE_FATIGUE_WHILE_WALKING = .1
+const RATE_HUNGER_WHILE_ANYTHING = .2
+const RATE_MANHUNT_WHILE_ANYTHING = -.1
+# changes at certain times
+const DIFF_MONEY_AFTER_WORK = 100
+const DIFF_MONEY_PER_FOOD = 5
+const DIFF_HUNGER_PER_FOOD = 10
+
+# starting values
+const INIT_CASH = 200
+const INIT_FOOD = 100
 
 func _ready():
 	goalPos = position
@@ -34,12 +53,52 @@ func _ready():
 	
 	randomize()
 
-func _physics_process(delta):
+	# starting values
+	cash = INIT_CASH
+	food = INIT_FOOD
+	
+	stat[CARDAMAGE] = 10
+	stat[UNPOPULARITY] = 70
+	
 
-	if Input.is_mouse_button_pressed(BUTTON_LEFT) and touch_ground:
+func continuous_changes_in_stats(delta):
+	if velocity.x != 0 and mode != DRIVING:
+		stat[FATIGUE] += RATE_FATIGUE_WHILE_WALKING * delta
+	if mode == AT_HOME:
+		stat[STRESS] += RATE_STRESS_AT_HOME * delta
+	stat[HUNGER] += RATE_HUNGER_WHILE_ANYTHING * delta
+	stat[MANHUNT] += RATE_MANHUNT_WHILE_ANYTHING * delta
+	
+func handle_stats(delta):
+	continuous_changes_in_stats(delta)
+
+	var stat_overall = 0
+	for i in stat.size():
+		stat[i] = clamp(stat[i], 0, 100)
+		stat_overall = max(stat_overall, stat[i])
+
+	var mod_r = clamp(2 * 0.01 * stat_overall, 0, 1)
+	var mod_g = clamp(2 - 2 * 0.01 * stat_overall, 0, 1) * .7
+	set("modulate", Color(mod_r, mod_g, 1))
+	
+	emit_signal("updateStress", stat[STRESS])
+	emit_signal("updateFatigue", stat[FATIGUE])
+	emit_signal("updateHunger", stat[HUNGER])
+	emit_signal("updateDamage", stat[DAMAGE])
+	emit_signal("updateUnpopularity", stat[UNPOPULARITY])
+	emit_signal("updateCarDamage", stat[CARDAMAGE])
+	emit_signal("updateManhunt", stat[MANHUNT])
+	
+	emit_signal("updateCash", cash)
+	emit_signal("updateFood", food)
+
+func _physics_process(delta):
+	deadtime = max(deadtime - delta, 0)
+
+	if Input.is_mouse_button_pressed(BUTTON_LEFT) and deadtime == 0:
 		goalPos = get_global_mouse_position()
 		goalDir = sign(goalPos.x - position.x)
-		print(goalPos.x, ' ', position.x, ' ', $Camera2D.get_camera_position().x, ' ', self.get_global_mouse_position().x)
+		deadtime = TOUCH_DEADTIME
 		
 	# should do first : complete whatever action has to be finished until goal can be aimed at
 	var distance_x = goalPos.x - position.x
@@ -51,7 +110,6 @@ func _physics_process(delta):
 		if distance_x * goalDir < velocity.x * velocity.x / (2*ACCEL_X):
 			velocity.x -= 2*veldelta_x
 
-		print(distance_x * goalDir, ' ', velocity.x, ' ', veldelta_x, ' ', goalDir, ' ', velocity.x * velocity.x * .5 / ACCEL_X)
 	else:
 		velocity.x = 0
 		goalDir = 0
@@ -72,42 +130,18 @@ func _physics_process(delta):
 	if move_and_collide(velocity*delta): velocity.y = 0
 	position.x = stopslide_x
 	
-	#touch_ground = is_on_floor()
-	touch_ground = true
-		
-	# the below is tmp stuff
-	if elapsed > 1:
-		elapsed = 0
-
-		for i in stat.size():
-			stat[i] = randi() % 101
-			print(i, ' ',stat[i])
-
-	emit_signal("updateStress", stat[STRESS])
-	emit_signal("updateFatigue", stat[FATIGUE])
-	emit_signal("updateHunger", stat[HUNGER])
-	emit_signal("updateDamage", stat[DAMAGE])
-	emit_signal("updateUnpopularity", stat[UNPOPULARITY])
-	emit_signal("updateCarDamage", stat[CARDAMAGE])
-	emit_signal("updateManhunt", stat[MANHUNT])
-		
-	var stat_avg = 0
-	for i in stat.size():
-		stat_avg += stat[i]/stat.size()
-
-	var mod_r = clamp(2 * 0.01 * stat_avg, 0, 1)
-	var mod_g = clamp(2 - 2 * 0.01 * stat_avg, 0, 1) * .7
-	set("modulate", Color(mod_r,mod_g,1))
-	
-	elapsed += delta
+	handle_stats(delta)
 
 func _on_Player_body_entered(body):
 	hide()
 	emit_signal("hit")
 	$CollisionShape2D.disabled = true
-	
-	
-func start(pos):
-	position = pos
+
+
+func _on_GeileKarre_get_in_car():
+	hide()
+	$Camera2D.current = false
+
+func _on_GeileKarre_get_out_of_car():
 	show()
-	$CollisionShape2D.disabled = false
+	$Camera2D.current = true

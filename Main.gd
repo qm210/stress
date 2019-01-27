@@ -2,7 +2,7 @@ extends Node
 
 signal updateTime
 
-const GAME_DAY_IN_REAL_MINUTES = 10
+const GAME_DAY_IN_REAL_MINUTES = .5
 
 onready var gameTimeMinutes
 

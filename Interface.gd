@@ -40,10 +40,10 @@ func _on_Bert_updateManhunt(val):
 	$BarLower4.set("self_modulate", Color(.01*val,0,0,1))
 	$BarLower4/HBoxContainer/Label.text = str(int(val)) + '% Manhunt'
 
-func _on_Bert_updateFood(val):
+func _on_Bert_updateCash(val):
 	$CashAndFood/CashLabel/.text = str(int(val)) + ' Cash'
 
-func _on_Bert_updateCash(val):
+func _on_Bert_updateFood(val):
 	$CashAndFood/FoodLabel/.text = str(int(val)) + ' Food'
 
 func _on_Main_updateTime(gameTimeMinutes):
