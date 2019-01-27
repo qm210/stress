@@ -1,0 +1,121 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Main.gd" type="Script" id=1]
+[ext_resource path="res://backdrop/inside_h1200.png" type="Texture" id=2]
+[ext_resource path="res://Interface.tscn" type="PackedScene" id=3]
+[ext_resource path="res://backdrop/sky.png" type="Texture" id=4]
+[ext_resource path="res://TextureRect.gd" type="Script" id=5]
+[ext_resource path="res://Bert.tscn" type="PackedScene" id=6]
+
+[node name="Main" type="Node"]
+
+script = ExtResource( 1 )
+
+[node name="World" type="StaticBody2D" parent="." index="0"]
+
+input_pickable = false
+collision_layer = 1
+collision_mask = 1
+constant_linear_velocity = Vector2( 0, 0 )
+constant_angular_velocity = 0.0
+friction = 1.0
+bounce = 0.0
+_sections_unfolded = [ "Transform" ]
+
+[node name="BG" type="Sprite" parent="World" index="0"]
+
+position = Vector2( 942, 290 )
+texture = ExtResource( 2 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="World" index="1"]
+
+position = Vector2( 1577, 282 )
+scale = Vector2( 1.69271, 1 )
+build_mode = 0
+polygon = PoolVector2Array( 1020, 470, 1865.65, 503, 2296.91, 503, 2379.62, 538, 2509.59, 468, 2680, 530, 2680, 600, -1160, 600, -1160, 500, -652.8, 500, -319.015, 500, -12.9967, 463, 403.496, 503, 814.08, 458, 930, 460 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="World" index="2"]
+
+layer = 1
+offset = Vector2( 0, 0 )
+rotation = 0.0
+scale = Vector2( 1, 1 )
+transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+
+[node name="Interface" parent="World/CanvasLayer" index="0" instance=ExtResource( 3 )]
+
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.0
+margin_left = -710.0
+margin_right = 710.0
+margin_bottom = 131.0
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="World/CanvasLayer" index="1"]
+
+layer = -1
+offset = Vector2( 0, 0 )
+rotation = 0.0
+scale = Vector2( 1, 1 )
+transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+scroll_offset = Vector2( 0, 0 )
+scroll_base_offset = Vector2( 0, 0 )
+scroll_base_scale = Vector2( 1, 1 )
+scroll_limit_begin = Vector2( 0, 0 )
+scroll_limit_end = Vector2( 0, 0 )
+scroll_ignore_camera_zoom = true
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="World/CanvasLayer/ParallaxBackground" index="0"]
+
+motion_scale = Vector2( 0.03, 0 )
+motion_offset = Vector2( -800, -400 )
+motion_mirroring = Vector2( 0, 0 )
+_sections_unfolded = [ "Motion" ]
+
+[node name="TextureRect" type="TextureRect" parent="World/CanvasLayer/ParallaxBackground/ParallaxLayer" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 2001.0
+margin_bottom = 2400.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 4 )
+stretch_mode = 0
+script = ExtResource( 5 )
+_sections_unfolded = [ "Anchor", "Margin", "Rect" ]
+
+[node name="Bert" parent="World" index="3" instance=ExtResource( 6 )]
+
+position = Vector2( -100, 430 )
+scale = Vector2( 0.65625, 0.65625 )
+
+[connection signal="updateTime" from="." to="World/CanvasLayer/ParallaxBackground/ParallaxLayer/TextureRect" method="_on_Main_updateTime"]
+
+[connection signal="updateTime" from="." to="World/CanvasLayer/Interface" method="_on_Main_updateTime"]
+
+[connection signal="updateCarDamage" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateCarDamage"]
+
+[connection signal="updateCash" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateCash"]
+
+[connection signal="updateDamage" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateDamage"]
+
+[connection signal="updateFatigue" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateFatigue"]
+
+[connection signal="updateFood" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateFood"]
+
+[connection signal="updateHunger" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateHunger"]
+
+[connection signal="updateManhunt" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateManhunt"]
+
+[connection signal="updateStress" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateStress"]
+
+[connection signal="updateUnpopularity" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateUnpopularity"]
+
+
