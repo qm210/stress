@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/bitexplosion.wav-7ec59bec44dfb81ea6a9d5556bd60863.sample"
+
+[deps]
+
+source_file="res://bitexplosion.wav"
+dest_files=[ "res://.import/bitexplosion.wav-7ec59bec44dfb81ea6a9d5556bd60863.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=true
+edit/normalize=true
+edit/loop=false
+compress/mode=0

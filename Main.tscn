@@ -1,14 +1,21 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
-[ext_resource path="res://backdrop/inside_h1200.png" type="Texture" id=2]
+[ext_resource path="res://backdrop/back_day.png" type="Texture" id=2]
 [ext_resource path="res://Interface.tscn" type="PackedScene" id=3]
 [ext_resource path="res://backdrop/sky.png" type="Texture" id=4]
 [ext_resource path="res://TextureRect.gd" type="Script" id=5]
-[ext_resource path="res://GeileKarre.tscn" type="PackedScene" id=6]
-[ext_resource path="res://Bert.tscn" type="PackedScene" id=7]
+[ext_resource path="res://ActionBox.tscn" type="PackedScene" id=6]
+[ext_resource path="res://interface/stress_logo.png" type="Texture" id=7]
+[ext_resource path="res://TitleStress.gd" type="Script" id=8]
+[ext_resource path="res://GeileKarre.tscn" type="PackedScene" id=9]
+[ext_resource path="res://Bert.tscn" type="PackedScene" id=10]
+[ext_resource path="res://ExclamationIcon.tscn" type="PackedScene" id=11]
+[ext_resource path="res://bitexplosion.wav" type="AudioStream" id=12]
+[ext_resource path="res://AudioExplosion.gd" type="Script" id=13]
+[ext_resource path="res://STRESS.ogg" type="AudioStream" id=14]
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node" index="0"]
 
 script = ExtResource( 1 )
 
@@ -25,15 +32,16 @@ _sections_unfolded = [ "Transform" ]
 
 [node name="BG" type="Sprite" parent="World" index="0"]
 
-position = Vector2( 942, 290 )
+position = Vector2( 2542.75, 467.259 )
+scale = Vector2( 0.845624, 0.845624 )
 texture = ExtResource( 2 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="World" index="1"]
 
-position = Vector2( 1577, 282 )
+position = Vector2( 1470, 372 )
 scale = Vector2( 1.69271, 1 )
 build_mode = 0
-polygon = PoolVector2Array( 1020, 470, 1865.65, 503, 2296.91, 503, 2379.62, 538, 2509.59, 468, 2680, 530, 2680, 600, -1160, 600, -1160, 500, -652.8, 500, -319.015, 500, -12.9967, 463, 403.496, 503, 814.08, 458, 930, 460 )
+polygon = PoolVector2Array( 1020, 470, 1865.65, 503, 2296.91, 503, 2379.62, 538, 2702.77, 543, 2702.77, -167, 2755.94, -172, 2755.94, 548, 2755.94, 683, -1166.77, 668, -1255.38, 603, -1243.57, 18, -1163.82, 18, -1163.82, 498, -652.8, 500, -319.015, 500, -12.9967, 463, 403.496, 503, 814.08, 458, 930, 460 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="World" index="2"]
 
@@ -92,18 +100,78 @@ stretch_mode = 0
 script = ExtResource( 5 )
 _sections_unfolded = [ "Anchor", "Margin", "Rect" ]
 
-[node name="GeileKarre" parent="World" index="3" instance=ExtResource( 6 )]
+[node name="HomeMenu" parent="World/CanvasLayer" index="2" instance=ExtResource( 6 )]
 
-position = Vector2( 595, 690 )
+position = Vector2( 1855, -400 )
+_sections_unfolded = [ "Transform" ]
 
-[node name="Bert" parent="World" index="4" instance=ExtResource( 7 )]
+[node name="TitleStress" type="Sprite" parent="World/CanvasLayer" index="3"]
+
+position = Vector2( 725, -360 )
+texture = ExtResource( 7 )
+script = ExtResource( 8 )
+_sections_unfolded = [ "Transform", "Visibility" ]
+
+[node name="GeileKarre" parent="World" index="3" instance=ExtResource( 9 )]
+
+position = Vector2( 480, 770 )
+
+[node name="Bert" parent="World" index="4" instance=ExtResource( 10 )]
 
 position = Vector2( -100, 430 )
 scale = Vector2( 0.65625, 0.65625 )
 
-[connection signal="updateTime" from="." to="World/CanvasLayer/ParallaxBackground/ParallaxLayer/TextureRect" method="_on_Main_updateTime"]
+[node name="ExclHome" parent="World" index="5" instance=ExtResource( 11 )]
+
+position = Vector2( -305, 750 )
+ID = "Home"
+
+[node name="ExclWork" parent="World" index="6" instance=ExtResource( 11 )]
+
+position = Vector2( 5840, 805 )
+ID = "Work"
+
+[node name="ExclStore" parent="World" index="7" instance=ExtResource( 11 )]
+
+position = Vector2( 2290, 690 )
+ID = "Store"
+
+[node name="AudioExplosion" type="AudioStreamPlayer" parent="." index="1"]
+
+stream = ExtResource( 12 )
+volume_db = -9.0
+pitch_scale = 1.0
+autoplay = false
+mix_target = 0
+bus = "Master"
+script = ExtResource( 13 )
+
+[node name="BgMusic" type="AudioStreamPlayer" parent="." index="2"]
+
+stream = ExtResource( 14 )
+volume_db = -3.0
+pitch_scale = 1.0
+autoplay = false
+mix_target = 0
+bus = "Master"
+
+[connection signal="haveToEat" from="." to="World/Bert" method="_on_Main_haveToEat"]
+
+[connection signal="haveToPayRent" from="." to="World/Bert" method="_on_Main_haveToPayRent"]
+
+[connection signal="increaseStat" from="." to="World/Bert" method="_on_Main_increaseStat"]
 
 [connection signal="updateTime" from="." to="World/CanvasLayer/Interface" method="_on_Main_updateTime"]
+
+[connection signal="updateTime" from="." to="World/CanvasLayer/ParallaxBackground/ParallaxLayer/TextureRect" method="_on_Main_updateTime"]
+
+[connection signal="button1" from="World/CanvasLayer/HomeMenu" to="World/Bert" method="_on_HomeMenu_button1"]
+
+[connection signal="button2" from="World/CanvasLayer/HomeMenu" to="World/Bert" method="_on_HomeMenu_button2"]
+
+[connection signal="reset_focus" from="World/CanvasLayer/HomeMenu" to="World/Bert" method="_on_HomeMenu_reset_focus"]
+
+[connection signal="play_explosion" from="World/CanvasLayer/TitleStress" to="AudioExplosion" method="_on_TitleStress_play_explosion"]
 
 [connection signal="get_in_car" from="World/GeileKarre" to="World/Bert" method="_on_GeileKarre_get_in_car"]
 
@@ -111,7 +179,9 @@ scale = Vector2( 0.65625, 0.65625 )
 
 [connection signal="input_event" from="World/GeileKarre" to="World/GeileKarre" method="_on_GeileKarre_input_event"]
 
-[connection signal="tree_entered" from="World/GeileKarre" to="World/GeileKarre" method="_on_GeileKarre_tree_entered"]
+[connection signal="bert_hat_heute_geil_geratzt" from="World/Bert" to="." method="_on_Bert_bert_hat_heute_geil_geratzt"]
+
+[connection signal="bert_ist_in_der_geilen_karre" from="World/Bert" to="World/GeileKarre" method="_on_Bert_bert_ist_in_der_geilen_karre"]
 
 [connection signal="updateCarDamage" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateCarDamage"]
 
@@ -130,5 +200,19 @@ scale = Vector2( 0.65625, 0.65625 )
 [connection signal="updateStress" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateStress"]
 
 [connection signal="updateUnpopularity" from="World/Bert" to="World/CanvasLayer/Interface" method="_on_Bert_updateUnpopularity"]
+
+[connection signal="exclamation_clicked" from="World/ExclHome" to="World/CanvasLayer/HomeMenu" method="_on_ExclHome_exclamation_clicked"]
+
+[connection signal="take_focus" from="World/ExclHome" to="World/Bert" method="_on_ExclHome_take_focus"]
+
+[connection signal="exclamation_clicked" from="World/ExclWork" to="World/CanvasLayer/HomeMenu" method="_on_ExclWork_exclamation_clicked"]
+
+[connection signal="take_focus" from="World/ExclWork" to="World/Bert" method="_on_ExclWork_take_focus"]
+
+[connection signal="exclamation_clicked" from="World/ExclStore" to="World/CanvasLayer/HomeMenu" method="_on_ExclStore_exclamation_clicked"]
+
+[connection signal="take_focus" from="World/ExclStore" to="World/Bert" method="_on_ExclStore_take_focus"]
+
+[connection signal="finished" from="AudioExplosion" to="." method="_on_AudioExplosion_finished"]
 
 
